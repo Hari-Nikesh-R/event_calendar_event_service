@@ -47,4 +47,25 @@ public class EventController {
             return new BaseResponse<>("",HttpStatus.INTERNAL_SERVER_ERROR.value(),false, exception.getMessage(),null);
         }
     }
+    @PutMapping(value = "/modify")
+    public BaseResponse<String> modifyEvent(@RequestBody CalendarEvent calendarEvent)
+    {
+        try{
+            return eventEventService.modifyEvent(calendarEvent.getEventId(),calendarEvent);
+        }
+        catch (Exception exception)
+        {
+            return new BaseResponse<>("",HttpStatus.INTERNAL_SERVER_ERROR.value(),false, exception.getMessage(),null);
+        }
+    }
+    @DeleteMapping(value = "/delete")
+    public BaseResponse<String> deleteEvent(@RequestParam("id") String eventId){
+        try {
+            return eventEventService.deleteEvent(eventId);
+        }
+        catch (Exception exception)
+        {
+            return new BaseResponse<>("",HttpStatus.INTERNAL_SERVER_ERROR.value(),false, exception.getMessage(),null);
+        }
+    }
 }
