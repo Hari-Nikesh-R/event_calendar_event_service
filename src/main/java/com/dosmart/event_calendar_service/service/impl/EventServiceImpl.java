@@ -6,12 +6,12 @@ import com.dosmart.event_calendar_service.repository.CalendarEventRepository;
 import com.dosmart.event_calendar_service.service.EventService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
 
 @Service
 public class EventServiceImpl implements EventService<CalendarEvent> {
@@ -19,12 +19,21 @@ public class EventServiceImpl implements EventService<CalendarEvent> {
     CalendarEventRepository calendarEventRepository;
     @Override
     public CalendarEvent save(CalendarEvent calendarEvent) {
-        Optional<CalendarEvent> optionalCalendarEvent = calendarEventRepository.findByLocation(calendarEvent.getLocation());
-        if(optionalCalendarEvent.isPresent())
-        {
-            if(!optionalCalendarEvent.get().getEventEndDate().before(calendarEvent.getEventStartDate()))
-            {
-                return null;
+        Optional<List<CalendarEvent>> optionalCalendarEvent = calendarEventRepository.findByLocation(calendarEvent.getLocation());
+        if(optionalCalendarEvent.isPresent()) {
+            for (CalendarEvent event : optionalCalendarEvent.get()) {
+                if (changeDateToDateTime(event.getEventStartDate()) == changeDateToDateTime(calendarEvent.getEventStartDate())){
+                    if (calendarEvent.getStartHour() >= event.getStartHour() && calendarEvent.getStartHour() <= event.getStartHour()) {
+                        return null;
+                    }
+                    if (calendarEvent.getEndHour() >= event.getStartHour() && calendarEvent.getEndHour() <= event.getEndHour()) {
+                        return null;
+                    }
+                    if(calendarEvent.getStartHour() > event.getStartHour() && calendarEvent.getEndHour() >= event.getEndHour()){
+                        return null;
+                    }
+                }
+
             }
         }
         calendarEvent.setCreated(new Date());
@@ -54,5 +63,10 @@ public class EventServiceImpl implements EventService<CalendarEvent> {
     @Override
     public List<CalendarEvent> getAllEvents() {
         return calendarEventRepository.findAll();
+    }
+    private Integer changeDateToDateTime(Date date){
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(date);
+        return calendar.get(Calendar.DATE);
     }
 }
