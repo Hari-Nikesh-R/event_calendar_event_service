@@ -7,4 +7,5 @@ import java.util.List;
 public interface EventService<T> {
     T save(CalendarEvent calendarEvent);
     List<T> getAllEvents();
+    T getCalendarDetail(String title, String description);
 }

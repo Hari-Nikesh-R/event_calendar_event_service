@@ -36,7 +36,7 @@ public class EventController {
             List<CalendarEvent> calendarEvents = eventEventService.getAllEvents();
             if(Objects.nonNull(calendarEvents))
             {
-                return new BaseResponse<>("Created Events", HttpStatus.OK.value(), true, "",calendarEvents);
+                return new BaseResponse<>("Fetched all events", HttpStatus.OK.value(), true, "",calendarEvents);
             }
             else{
                 return new BaseResponse<>("No Events present", HttpStatus.NO_CONTENT.value() ,false,"No event present, Create a new event",null);
@@ -46,5 +46,23 @@ public class EventController {
         {
             return new BaseResponse<>("",HttpStatus.INTERNAL_SERVER_ERROR.value(),false, exception.getMessage(),null);
         }
+    }
+
+    @GetMapping(value = "/get")
+    public BaseResponse<CalendarEvent> getCalendarDetail(@RequestParam("title") String title, @RequestParam("description") String description){
+        try {
+            CalendarEvent calendarEvent = eventEventService.getCalendarDetail(title, description);
+            if(Objects.nonNull(calendarEvent)){
+                return new BaseResponse<>("Successfully fetched",HttpStatus.OK.value(), true, "", calendarEvent);
+            }
+            else{
+                return new BaseResponse<>("Unable to fetch", HttpStatus.NO_CONTENT.value(), false, "No event found", null);
+            }
+        }
+        catch (Exception exception)
+        {
+            return new BaseResponse<>("",HttpStatus.INTERNAL_SERVER_ERROR.value(),false, exception.getMessage(),null);
+        }
+
     }
 }

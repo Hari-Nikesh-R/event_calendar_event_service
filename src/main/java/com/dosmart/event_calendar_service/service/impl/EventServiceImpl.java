@@ -34,4 +34,10 @@ public class EventServiceImpl implements EventService<CalendarEvent> {
     public List<CalendarEvent> getAllEvents() {
         return calendarEventRepository.findAll();
     }
+
+    @Override
+    public CalendarEvent getCalendarDetail(String title, String description) {
+        Optional<CalendarEvent> optionalCalendarEvent = calendarEventRepository.findByTitleAndDescription(title, description);
+        return optionalCalendarEvent.orElse(null);
+    }
 }
