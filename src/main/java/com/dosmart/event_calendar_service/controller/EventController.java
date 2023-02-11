@@ -36,7 +36,7 @@ public class EventController {
             List<CalendarEvent> calendarEvents = eventEventService.getAllEvents();
             if(Objects.nonNull(calendarEvents))
             {
-                return new BaseResponse<>("Fetched all events", HttpStatus.OK.value(), true, "",calendarEvents);
+                return new BaseResponse<>("Created Events", HttpStatus.OK.value(), true, "",calendarEvents);
             }
             else{
                 return new BaseResponse<>("No Events present", HttpStatus.NO_CONTENT.value() ,false,"No event present, Create a new event",null);
@@ -64,5 +64,26 @@ public class EventController {
             return new BaseResponse<>("",HttpStatus.INTERNAL_SERVER_ERROR.value(),false, exception.getMessage(),null);
         }
 
+    }
+    @PutMapping(value = "/modify")
+    public BaseResponse<String> modifyEvent(@RequestBody CalendarEvent calendarEvent)
+    {
+        try{
+            return eventEventService.modifyEvent(calendarEvent.getEventId(),calendarEvent);
+        }
+        catch (Exception exception)
+        {
+            return new BaseResponse<>("",HttpStatus.INTERNAL_SERVER_ERROR.value(),false, exception.getMessage(),null);
+        }
+    }
+    @DeleteMapping(value = "/delete")
+    public BaseResponse<String> deleteEvent(@RequestParam("id") String eventId){
+        try {
+            return eventEventService.deleteEvent(eventId);
+        }
+        catch (Exception exception)
+        {
+            return new BaseResponse<>("",HttpStatus.INTERNAL_SERVER_ERROR.value(),false, exception.getMessage(),null);
+        }
     }
 }

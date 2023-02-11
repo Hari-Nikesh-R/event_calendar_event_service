@@ -11,6 +11,7 @@ import java.util.Date;
 public class CalendarEvent {
     @Id
     private String eventId;
+    private String department;
     private String createdBy;
     private String modifiedBy;
     private String status;
