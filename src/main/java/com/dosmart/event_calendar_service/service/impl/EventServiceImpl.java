@@ -43,12 +43,14 @@ public class EventServiceImpl implements EventService<CalendarEvent> {
     }
 
     @Override
-    public BaseResponse<String> modifyEvent(String eventId, CalendarEvent calendarEvent) {
+    public BaseResponse<String>  modifyEvent(String eventId, CalendarEvent calendarEvent) {
         Optional<CalendarEvent> optionalCalendarEvent =  calendarEventRepository.findById(eventId);
         if(optionalCalendarEvent.isPresent())
         {
             BeanUtils.copyProperties(calendarEvent, optionalCalendarEvent.get());
             calendarEventRepository.save(optionalCalendarEvent.get());
+            calendarEvent.setModifiedBy("hari.nikesh.r.cce@sece.ac.in");
+            calendarEvent.setUpdated(new Date());
             return new BaseResponse<>("Modification Successful", HttpStatus.OK.value(),true,"","Modified Event");
         }
         return new BaseResponse<>("Modification UnSuccessful", HttpStatus.NO_CONTENT.value(), false, "Event not found, Something went wrong",null);
