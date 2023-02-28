@@ -9,15 +9,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Objects;
 
+import static com.dosmart.event_calendar_service.utils.Constants.AUTHORIZATION;
+
 @RestController
 @RequestMapping(value = "/events")
 public class EventController {
     @Autowired
     EventService<CalendarEvent> eventEventService;
     @PostMapping(value = "/add")
-    public BaseResponse<CalendarEvent> addEvent(@RequestBody CalendarEvent calendarEvent){
+    public BaseResponse<CalendarEvent> addEvent(@RequestBody CalendarEvent calendarEvent, @RequestHeader(AUTHORIZATION) String token){
         try{
-            CalendarEvent event = eventEventService.save(calendarEvent);
+
+            CalendarEvent event = eventEventService.save(calendarEvent, token);
             if(Objects.nonNull(event)) {
                 return new BaseResponse<>("Event Added successfully", HttpStatus.OK.value(),true, "", event);
             }
@@ -27,7 +30,11 @@ public class EventController {
         }
         catch (Exception exception)
         {
-            return new BaseResponse<>("",HttpStatus.INTERNAL_SERVER_ERROR.value(),false, exception.getMessage(),null);
+            BaseResponse<CalendarEvent> baseResponse = new BaseResponse<>(exception.toString(), HttpStatus.INTERNAL_SERVER_ERROR.value(), false, exception.getMessage(), null);
+            if (baseResponse.getError().contains("401")) {
+                baseResponse.setCode(401);
+            }
+            return baseResponse;
         }
     }
     @GetMapping(value = "/all")
