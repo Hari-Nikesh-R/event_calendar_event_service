@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface CalendarEventRepository extends MongoRepository<CalendarEvent,String> {
     Optional<CalendarEvent> findByEventStartDateAndStartHourAndLocation(Date eventStartDate, Integer startHour, String location);
     Optional<List<CalendarEvent>> findByLocation(String location);
+    Optional<CalendarEvent> findByTitleAndDescription(String title, String description);
 }

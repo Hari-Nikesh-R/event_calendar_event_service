@@ -4,6 +4,7 @@ import com.dosmart.event_calendar_service.dtos.BaseResponse;
 import com.dosmart.event_calendar_service.model.CalendarEvent;
 import com.dosmart.event_calendar_service.repository.CalendarEventRepository;
 import com.dosmart.event_calendar_service.service.EventService;
+import com.dosmart.event_calendar_service.utils.TokenValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,8 +18,12 @@ import java.util.*;
 public class EventServiceImpl implements EventService<CalendarEvent> {
     @Autowired
     CalendarEventRepository calendarEventRepository;
+
+    @Autowired
+    TokenValidator tokenValidator;
     @Override
-    public CalendarEvent save(CalendarEvent calendarEvent) {
+    public CalendarEvent save(CalendarEvent calendarEvent, String token) {
+        String email = tokenValidator.validateByToken(token);
         Optional<List<CalendarEvent>> optionalCalendarEvent = calendarEventRepository.findByLocation(calendarEvent.getLocation());
         if(optionalCalendarEvent.isPresent()) {
             for (CalendarEvent event : optionalCalendarEvent.get()) {
@@ -37,18 +42,20 @@ public class EventServiceImpl implements EventService<CalendarEvent> {
             }
         }
         calendarEvent.setCreated(new Date());
-        calendarEvent.setCreatedBy("hari.nikesh.r.cce@gmail.com");
+        calendarEvent.setCreatedBy(email);
         calendarEvent.setStatus("ACTIVE");
         return calendarEventRepository.save(calendarEvent);
     }
 
     @Override
-    public BaseResponse<String> modifyEvent(String eventId, CalendarEvent calendarEvent) {
+    public BaseResponse<String>  modifyEvent(String eventId, CalendarEvent calendarEvent) {
         Optional<CalendarEvent> optionalCalendarEvent =  calendarEventRepository.findById(eventId);
         if(optionalCalendarEvent.isPresent())
         {
             BeanUtils.copyProperties(calendarEvent, optionalCalendarEvent.get());
             calendarEventRepository.save(optionalCalendarEvent.get());
+            calendarEvent.setModifiedBy("hari.nikesh.r.cce@sece.ac.in");
+            calendarEvent.setUpdated(new Date());
             return new BaseResponse<>("Modification Successful", HttpStatus.OK.value(),true,"","Modified Event");
         }
         return new BaseResponse<>("Modification UnSuccessful", HttpStatus.NO_CONTENT.value(), false, "Event not found, Something went wrong",null);
@@ -63,6 +70,12 @@ public class EventServiceImpl implements EventService<CalendarEvent> {
     @Override
     public List<CalendarEvent> getAllEvents() {
         return calendarEventRepository.findAll();
+    }
+
+    @Override
+    public CalendarEvent getCalendarDetail(String title, String description) {
+        Optional<CalendarEvent> optionalCalendarEvent = calendarEventRepository.findByTitleAndDescription(title, description);
+        return optionalCalendarEvent.orElse(null);
     }
     private Integer changeDateToDateTime(Date date){
         Calendar calendar = new GregorianCalendar();
