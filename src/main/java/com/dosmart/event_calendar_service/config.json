@@ -1,0 +1,9 @@
+[{
+  "key":"departments",
+  "value":["CCE","ECE","EEE"]
+},
+  {
+  "key": "venues",
+    "value":["CCE","ECE","EEE"]
+  }
+]
