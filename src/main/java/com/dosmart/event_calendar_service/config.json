@@ -1,6 +1,6 @@
 [{
   "key":"departments",
-  "value":["CCE","ECE","EEE"]
+  "value":["CCE,purple","ECE,red","EEE,yellow","ADMIN,purple"]
 },
   {
   "key": "venues",
